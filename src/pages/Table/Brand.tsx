@@ -2,6 +2,7 @@ import { useState } from "react"
 import BrandPostForm from "../../components/BrandPostForm"
 import FormLayout from "../../components/FormLayout"
 import BrandTable from "../../components/BrandTable"
+import Table from "../../components/Table"
 
 const Brand = () => {
   const [showPostForm, setShowPostForm] = useState<boolean>(false)
@@ -10,19 +11,17 @@ const Brand = () => {
 
 
   const handleShow = () => {
-    setShowPatchForm(!showPatchForm)
+    setShowPostForm(!showPostForm)
   }
 
   return (
     <>
-      {showForm ?
-        <FormLayout >
-          <BrandPostForm />
+      {showPostForm ?
+        <FormLayout handleShow = {handleShow} >
+          <BrandPostForm handleShow = {handleShow}   />
         </FormLayout> :
-        
-        <BrandTable />
+        <BrandTable handleShow = {handleShow} />
       }
-
     </>
   )
 }

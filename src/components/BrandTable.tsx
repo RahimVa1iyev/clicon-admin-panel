@@ -1,59 +1,77 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColDef } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
-import { AgGridReact } from 'ag-grid-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { fetchAllBrands, fetchDeleteBrand } from '../services/apiBrand';
+import { Brands } from '../interfaces';
+import Table from './Table';
+import { Button } from 'antd';
 
-// Row Data Interface
-interface IRow {
-  no: number;
-  name: string;
-  created_at: Date;
-  date: string;
-
+type BrandTableProp = {
+  handleShow: () => void
 }
 
-// Create new GridExample component
-const BrandTable = () => {
-  // Row Data: The data to be displayed.
-  const [rowData, setRowData] = useState<IRow[]>([]);
+export interface CustomColDef extends ColDef {
+  cellRendererFramework?: any;
+}
 
-  // Column Definitions: Defines & controls grid columns.
-  const [colDefs] = useState<ColDef[]>([
-    { field: 'no' },
-    { field: 'name' },
-    { field: 'Created At' },
-    { field: 'Action' },
+const BrandTable = ({ handleShow }: BrandTableProp) => {
+
+  const { data, isLoading, refetch } = useQuery<Brands[]>({
+    queryKey: ['all-brands'],
+    queryFn: fetchAllBrands
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: (brandId: string) => fetchDeleteBrand(brandId),
+    onSuccess: () => {
+      refetch();
+    }
+  });
+
+
+  const handleDelete = (brandId: string) => {
+    if (window.confirm('Are you sure you want to delete this brand?')) {
+      mutate(brandId);
+    }
+  };
+
+  const [colDefs] = useState<CustomColDef[]>([
+    { field: '_id', headerName: 'ID' },
+    { field: 'name', headerName: 'Name' },
+    { field: 'categoryCount', headerName: 'Category Count' },
+    { field: 'productCount', headerName: 'Product Count' },
+    { field: 'createdAt', headerName: 'Created At' },
+
+    {
+      headerName: 'Actions', field: '_id',editable:false, checkboxSelection: false,
+      cellRenderer: (params: any) =>
+        <div className='flex items-center gap-2'>
+          <Button onClick={() =>handleDelete(params.value)} type="primary" danger ghost>
+            Delete
+          </Button>
+          <Button type="primary" ghost>
+            Update
+          </Button>
+        </div>
+    }
   ]);
 
-  // Fetch data & update rowData state
-  useEffect(() => {
-    fetch('https://www.ag-grid.com/example-assets/space-mission-data.json') // Fetch data from server
-      .then((result) => result.json()) // Convert to JSON
-      .then((rowData) => setRowData(rowData)); // Update state of `rowData`
-  }, []);
+  const brandsWithCounts = useMemo(() => {
+    if (!data) return [];
+    return data.map(brand => ({
+      ...brand,
+      categoryCount: brand.categories.length,
+      productCount: brand.products.length
+    }));
+  }, [data]);
 
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      filter: true,
-      editable: true,
-    };
-  }, []);
-
-  // Container: Defines the grid's theme & dimensions.
   return (
-    <div
-      className={  "ag-theme-quartz"}
-      style={{ width: '100%', height: '50vh' }}
-    >
-      {/* The AG Grid component, with Row Data & Column Definition props */}
-      <AgGridReact
-       rowData={rowData}
-        columnDefs={colDefs} 
-        defaultColDef={defaultColDef}
-        pagination ={true}/>
-    </div>
+    <>
+      <Table onShow={handleShow} data={brandsWithCounts} columns={colDefs} />
+    </>
   );
 };
 
-export default BrandTable
+export default BrandTable;
