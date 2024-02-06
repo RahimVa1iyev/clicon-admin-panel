@@ -1,6 +1,5 @@
 import React from 'react';
-import { Select, Space } from 'antd';
-import type { SelectProps } from 'antd';
+import { Select } from 'antd';
 import { Option } from '../interfaces';
 
 type MultiSelectProp = {

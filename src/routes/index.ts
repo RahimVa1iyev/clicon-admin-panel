@@ -3,6 +3,7 @@ import { lazy } from 'react';
 const Profile = lazy(() => import('../pages/Profile'));
 const Tables = lazy(() => import('../pages/Tables'));
 const Brand =lazy(() => import('../pages/Table/Brand') )
+const Product = lazy(() => import('../pages/Table/Product'))
 
 const coreRoutes = [
 
@@ -23,6 +24,11 @@ const coreRoutes = [
     path: '/brands',
     title: 'Brand',
     component: Brand,
+  },
+  {
+    path: '/products',
+    title: 'Product',
+    component: Product,
   },
 
 ];

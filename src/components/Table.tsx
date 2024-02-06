@@ -5,13 +5,14 @@ import { Brands } from '../interfaces/';
 import { CustomColDef } from './BrandTable';
 import { useCallback } from 'react';
 
-type TableProps = {
-    data : Brands[],
+type TableProps<T> = {
+    data : T[] ,
     columns : CustomColDef[],
-    onShow : () => void
+    onShow : () => void,
+    name : string
 }
 
-const Table = ({data,columns,onShow} : TableProps) => {
+const Table = <T,>({ data, columns, onShow }: TableProps<T>) => {
 
     const defaultColDef = {
             sortable: true, 
@@ -37,7 +38,7 @@ const Table = ({data,columns,onShow} : TableProps) => {
     return (
         <div>
             <div className='flex items-center justify-between my-[20px]'>
-                <h5 className='text-[18px] font-semibold text-graydark'>Brand Table</h5>
+                <h5 className='text-[18px] font-semibold text-graydark'>{name} Table</h5>
                 <button onClick={onShow} className='bg-primary text-white font-medium rounded-[6px] px-[25px] py-2'>Create</button>
             </div>
             <div className="ag-theme-quartz" style={{ height: 500 }}>

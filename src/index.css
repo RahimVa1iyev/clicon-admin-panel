@@ -83,6 +83,29 @@
 .ant-btn:focus {
   outline: none !important; /* Buton tıklanınca dış sınırlarını kaldırır */
 }
+.ant-select-selection-search{
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+}
+.ant-select-selector{
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+  box-shadow: none !important;
+}
+.ant-select-selection-search::after{
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+
+}
+.ant-select-selection-search::before{
+  border: none !important;
+  outline: none !important;
+  border-color: none !important;
+
+}
 
 .flatpickr-day.selected {
   @apply bg-primary border-primary hover:bg-primary hover:border-primary;
