@@ -2,9 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import MultiSelect from "./MultiSelect"
 import { fetchGetCategories } from "../services/apiCategory"
 import { useEffect, useState } from "react"
-import { BrandPost, Category, Option } from "../interfaces";
+import { BrandPost, Category, Feature, Option } from "../interfaces";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
 import { fetchCreateBrand } from "../services/apiBrand";
+import { SelectedFeature } from "./ProductPostForm";
 
 type PostCategoryData = {
     name: string,
@@ -16,11 +17,15 @@ type BrandPostFormProp = {
 
 const BrandPostForm = ({ handleShow }: BrandPostFormProp) => {
     const [categoryOptions, setCategoryoptions] = useState<Option[]>([])
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>()
+    const [features, setFeatures] = useState<Feature[][]>()
+    const [selectedFeatures, setSelectedFeatures] = useState<SelectedFeature[]>()
 
     const { data: categories } = useQuery<Category[]>({
         queryKey: ['categories'],
         queryFn: fetchGetCategories
     })
+
 
     const { mutate } = useMutation({
         mutationFn: (mutateData: BrandPost) => fetchCreateBrand(mutateData),
@@ -29,7 +34,6 @@ const BrandPostForm = ({ handleShow }: BrandPostFormProp) => {
         },
         onError: (err) => {
             console.log('err', err);
-
         }
     })
 
@@ -42,19 +46,32 @@ const BrandPostForm = ({ handleShow }: BrandPostFormProp) => {
                 value: category._id
             }));
             setCategoryoptions(options);
+
+            const filteredFeatures = categories
+                .filter(category => selectedCategoryIds?.includes(category._id))
+                .map(category => category.features);
+            setFeatures(filteredFeatures)
         }
-    }, [categories])
+    }, [categories, selectedCategoryIds]);
+
+
+
 
     const onSubmit = (data: BrandPost) => {
-        mutate(data)
+        const mutateData = {
+            ...data,
+            features: selectedFeatures
+        }
+        console.log('mutateData', mutateData);
+
+        mutate(mutateData)
     }
-    
 
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} >
-                <div className="p-6.5">
-                    <div className="mb-4.5">
+                <div className="flex flex-col gap-3 mb-4">
+                    <div >
                         <input
                             type="text"
                             name='name'
@@ -64,7 +81,28 @@ const BrandPostForm = ({ handleShow }: BrandPostFormProp) => {
                         />
                     </div>
                     <div>
-                        <MultiSelect onChange={(selectedCategory: any) => setValue('categoryIds', selectedCategory.map((category: any) => category))} placeholder='Categories' options={categoryOptions} />
+                        <MultiSelect onChange={(selectedCategory: any) => { setValue('categoryIds', selectedCategory.map((category: any) => category)); setSelectedCategoryIds(selectedCategory) }} placeholder='Categories' options={categoryOptions} />
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        {features &&
+                            features.map((featureGroup, index) => (
+                                <div key={index}>
+                                    {featureGroup.map((feature) => (
+                                        <MultiSelect
+                                            key={feature._id}
+                                            onChange={(selectedData: any) => {
+                                                // Filter out previously selected features with the same name
+                                                setSelectedFeatures((prevFeatures: SelectedFeature[] | undefined) => {
+                                                    const filteredFeatures = prevFeatures?.filter((prevFeature) => prevFeature.name !== feature.name);
+                                                    return [...(filteredFeatures ?? []), { name: feature.name, option: selectedData }];
+                                                });
+                                            }}
+                                            placeholder={feature.name}
+                                            options={feature.options}
+                                        />
+                                    ))}
+                                </div>
+                            ))}
                     </div>
                 </div>
 

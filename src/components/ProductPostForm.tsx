@@ -11,7 +11,7 @@ import { Checkbox } from 'antd'
 import Upload from './Upload'
 import { fetchPostProduct } from '../services/apiProduct'
 
-type SelectedFeature = {
+export  type SelectedFeature = {
     name: string,
     option: string
 }
