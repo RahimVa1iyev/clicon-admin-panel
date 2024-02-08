@@ -30,23 +30,14 @@ const ProductTable = ({ handleShow }: ProductTableProps) => {
                 return features.map((feature: any) => `${feature.name}: ${feature.option}`).join(', ');
             }
         },
-        {
-            field: 'colors', headerName: 'Colors',
-            valueGetter: (params: any) => {
-                const colors = params.data.colors;
-                return colors.join(',')
-
-            }
-        },
         { field: 'description', headerName: 'Description' },
         { field: 'costPrice', headerName: 'Cost Price' },
         { field: 'salePrice', headerName: 'Sale Price' },
         { field: 'discountPercent', headerName: 'Discount Percent' },
         {
-            field: 'stockStatus', headerName: 'Stock Status',
-            valueGetter: (params: any) => params.data.stockStatus
+            field: 'stockCount', headerName: 'Stock Count',
+            valueGetter: (params: any) => params.data.stockCount
         },
-        { field: 'createdAt', headerName: 'Created At' },
         // {
         //     headerName: 'Actions',
         //     field: '_id',

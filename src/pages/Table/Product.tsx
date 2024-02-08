@@ -18,7 +18,7 @@ const Product = () => {
             {
                 showPostForm ?
                     <FormLayout handleShow={handleShow} >
-                        <ProductPostForm />
+                        <ProductPostForm handleShow={handleShow} />
                     </FormLayout> :
                     <ProductTable handleShow ={handleShow} />
             }

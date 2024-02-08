@@ -50,7 +50,7 @@ export interface Product {
     bestDiscountPercent: number;
     sellerCount: number;
     viewCount: number;
-    stockStatus: boolean;
+    stockCount: number;
     isHot: boolean;
     isFeature: boolean;
   }
