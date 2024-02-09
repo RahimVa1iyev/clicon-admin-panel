@@ -12,7 +12,6 @@ export const fetchPostProduct = async (mutateData : Product) => {
 }
 
 export const fetchUploadImage = async({id ,formData}:any) => {
-    console.log('id',id);
     
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/products/uploadImage/${id}`,formData,{
         headers: {
